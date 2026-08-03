@@ -1,7 +1,7 @@
 #!/bin/bash
 # KWI pack/unpack — без sudo, symlink'и сохраняются
-#   ./kwi.sh unpack <kwi> [dir]
-#   ./kwi.sh pack   <dir> <kwi_out>
+#   ./kwizipper.sh unpack <kwi> [dir]
+#   ./kwizipper.sh pack   <dir> <kwi_out>
 set -e
 
 HDR_SIZE() { python3 -c "with open('$1','rb') as f: d=f.read(0x200000); i=d.find(b'\x53\xef'); print(i-0x438 if i>=0x400 else 0)"; }

@@ -20,4 +20,8 @@ LOADING.KWI Это ext2 (та же файловая система что в Lin
 - unpack: отрезает заголовок → получает чистый ext2 → debugfs rdump выгружает все файлы
 - pack: mkfs.ext2 -d создаёт новый ext2 из файлов → приклеивает заголовок обратно
 
+```
+#   ./kwizipper.sh unpack <kwi> [dir]
+#   ./kwizipper.sh pack [dir] <kwi_out>
+```
 Вот и всё. Никакой магии.

@@ -4,7 +4,19 @@
 #   ./kwizipper.sh pack   <dir> <kwi_out>
 set -e
 
-HDR_SIZE() { python3 -c "with open('$1','rb') as f: d=f.read(0x200000); i=d.find(b'\x53\xef'); print(i-0x438 if i>=0x400 else 0)"; }
+HDR_SIZE() { python3 -c "
+with open('$1','rb') as d:
+    f=d.read(0x200000)
+for o in range(0x400,len(f)):
+    if f[o:o+2]==b'\x53\xef':
+        s=o-0x38
+        if s>=0:
+            i=int.from_bytes(f[s:s+4],'little')
+            b=int.from_bytes(f[s+4:s+8],'little')
+            if 0<i<10**7 and 0<b<10**8:
+                print(s-0x400); exit(0)
+print(0)
+"; }
 
 CMD="${1:-help}"
 
@@ -49,6 +61,10 @@ pack)
     DIRSIZE=$(( $(du -sb "$DIR" | cut -f1) + 104857600 ))  # +100MB запас
     truncate -s $DIRSIZE "$IMG"
     mkfs.ext2 -q -F -d "$DIR" "$IMG" 2>/dev/null
+
+    # Ужимаем до минимума
+    /usr/sbin/e2fsck -fy "$IMG" 2>/dev/null
+    /usr/sbin/resize2fs -M "$IMG" 2>/dev/null
 
     # Склеиваем заголовок + ext2
     cat "$DIR.header" "$IMG" > "$KWI_OUT"

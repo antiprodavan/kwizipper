@@ -58,13 +58,10 @@ pack)
 
     # Создаём ext2 из директории
     IMG="/tmp/kwi_ext2_$$.img"
-    DIRSIZE=$(( $(du -sb "$DIR" | cut -f1) + 104857600 ))  # +100MB запас
-    truncate -s $DIRSIZE "$IMG"
+    DIRSIZE=$(du -sb "$DIR" | cut -f1)
+    IMGSIZE=$(( DIRSIZE + DIRSIZE / 5 + 1048576 ))  # +20% + 1MB
+    truncate -s $IMGSIZE "$IMG"
     mkfs.ext2 -q -F -d "$DIR" "$IMG" 2>/dev/null
-
-    # Ужимаем до минимума
-    /usr/sbin/e2fsck -fy "$IMG" 2>/dev/null
-    /usr/sbin/resize2fs -M "$IMG" 2>/dev/null
 
     # Склеиваем заголовок + ext2
     cat "$DIR.header" "$IMG" > "$KWI_OUT"
